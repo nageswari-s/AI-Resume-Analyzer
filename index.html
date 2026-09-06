@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Resume Analyzer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #1f2937;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #d1d5db;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      resize: vertical;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #result {
+      display: none;
+    }
+
+    .score {
+      font-size: 40px;
+      font-weight: bold;
+      text-align: center;
+      margin: 15px 0;
+    }
+
+    .result-item {
+      padding: 12px;
+      margin-top: 10px;
+      background: #f3f4f6;
+      border-radius: 8px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .container {
+        margin: 15px auto;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>AI Resume Analyzer</h1>
+    <p>Analyze your resume and improve your job opportunities</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <label for="resume">Paste Your Resume</label>
+
+      <textarea
+        id="resume"
+        placeholder="Paste your resume text here..."
+      ></textarea>
+
+      <label for="job" style="margin-top:20px;">
+        Paste Job Description
+      </label>
+
+      <textarea
+        id="job"
+        placeholder="Paste the job description here..."
+      ></textarea>
+
+      <button onclick="analyzeResume()">
+        Analyze Resume
+      </button>
+    </div>
+
+    <div class="card" id="result">
+      <h2>Analysis Result</h2>
+
+      <div class="score" id="score">0%</div>
+
+      <div class="result-item" id="skills"></div>
+      <div class="result-item" id="message"></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>AI Resume Analyzer | Nageswari S</p>
+  </footer>
+
+  <script>
+    function analyzeResume() {
+
+      const resume = document
+        .getElementById("resume")
+        .value
+        .toLowerCase();
+
+      const job = document
+        .getElementById("job")
+        .value
+        .toLowerCase();
+
+      if (resume.trim() === "" || job.trim() === "") {
+        alert("Please enter both your resume and the job description.");
+        return;
+      }
+
+      const keywords = [
+        "python",
+        "java",
+        "javascript",
+        "html",
+        "css",
+        "sql",
+        "mysql",
+        "react",
+        "git",
+        "github",
+        "machine learning",
+        "data structures"
+      ];
+
+      let matched = [];
+
+      keywords.forEach(function(keyword) {
+        if (job.includes(keyword) && resume.includes(keyword)) {
+          matched.push(keyword);
+        }
+      });
+
+      let score = Math.round(
+        (matched.length / keywords.filter(k => job.includes(k)).length) * 100
+      );
+
+      if (isNaN(score)) {
+        score = 0;
+      }
+
+      document.getElementById("result").style.display = "block";
+
+      document.getElementById("score").textContent =
+        score + "% Match";
+
+      document.getElementById("skills").textContent =
+        "Matched Skills: " +
+        (matched.length > 0 ? matched.join(", ") : "No matching skills found.");
+
+      document.getElementById("message").textContent =
+        score >= 70
+          ? "Good match! Your resume matches many job requirements."
+          : "Consider adding relevant skills and keywords from the job description.";
+    }
+  </script>
+
+</body>
+</html>
