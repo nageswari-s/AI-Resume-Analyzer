@@ -165,70 +165,104 @@
     <p>AI Resume Analyzer | Nageswari S</p>
   </footer>
 
-  <script>
-    function analyzeResume() {
+ 
+<script>
+function analyzeResume() {
+  const resume = document.getElementById("resume").value.toLowerCase();
+  const job = document.getElementById("job").value.toLowerCase();
 
-      const resume = document
-        .getElementById("resume")
-        .value
-        .toLowerCase();
+  if (!resume.trim() || !job.trim()) {
+    alert("Please enter both your resume and the job description.");
+    return;
+  }
 
-      const job = document
-        .getElementById("job")
-        .value
-        .toLowerCase();
+  const keywords = [
+    "python",
+    "java",
+    "javascript",
+    "html",
+    "css",
+    "sql",
+    "mysql",
+    "react",
+    "git",
+    "github",
+    "machine learning",
+    "data structures",
+    "communication",
+    "problem solving",
+    "teamwork"
+  ];
 
-      if (resume.trim() === "" || job.trim() === "") {
-        alert("Please enter both your resume and the job description.");
-        return;
-      }
+  // Only consider skills mentioned in the job description.
+  const required = keywords.filter(skill => job.includes(skill));
 
-      const keywords = [
-        "python",
-        "java",
-        "javascript",
-        "html",
-        "css",
-        "sql",
-        "mysql",
-        "react",
-        "git",
-        "github",
-        "machine learning",
-        "data structures"
-      ];
+  const matched = required.filter(skill => resume.includes(skill));
+  const missing = required.filter(skill => !resume.includes(skill));
 
-      let matched = [];
+  // Avoid dividing by zero if no recognized skills appear in the job description.
+  const score = required.length
+    ? Math.round((matched.length / required.length) * 100)
+    : 0;
 
-      keywords.forEach(function(keyword) {
-        if (job.includes(keyword) && resume.includes(keyword)) {
-          matched.push(keyword);
-        }
-      });
+  document.getElementById("result").style.display = "block";
 
-      let score = Math.round(
-        (matched.length / keywords.filter(k => job.includes(k)).length) * 100
-      );
+  document.getElementById("score").textContent =
+    required.length ? score + "% Match" : "No score available";
 
-      if (isNaN(score)) {
-        score = 0;
-      }
+  document.getElementById("skills").textContent =
+    "Matched Skills: " +
+    (matched.length ? matched.join(", ") : "No matching skills found.");
 
-      document.getElementById("result").style.display = "block";
+  // Show missing skills.
+  let missingBox = document.getElementById("missing");
 
-      document.getElementById("score").textContent =
-        score + "% Match";
+  if (!missingBox) {
+    missingBox = document.createElement("div");
+    missingBox.id = "missing";
+    missingBox.className = "result-item";
+    document.getElementById("skills").after(missingBox);
+  }
 
-      document.getElementById("skills").textContent =
-        "Matched Skills: " +
-        (matched.length > 0 ? matched.join(", ") : "No matching skills found.");
+  missingBox.textContent =
+    "Missing Skills: " +
+    (required.length
+      ? (missing.length ? missing.join(", ") : "No missing skills from our keyword list.")
+      : "No recognized skills found in the job description.");
 
-      document.getElementById("message").textContent =
-        score >= 70
-          ? "Good match! Your resume matches many job requirements."
-          : "Consider adding relevant skills and keywords from the job description.";
-    }
-  </script>
+  // Provide suggestions.
+  let suggestionBox = document.getElementById("suggestions");
 
-</body>
-</html>
+  if (!suggestionBox) {
+    suggestionBox = document.createElement("div");
+    suggestionBox.id = "suggestions";
+    suggestionBox.className = "result-item";
+    missingBox.after(suggestionBox);
+  }
+
+  let suggestions = [];
+
+  if (missing.length) {
+    suggestions.push("Review the job requirements and add relevant skills only if you genuinely have them: " + missing.join(", ") + ".");
+  }
+
+  if (score < 70 && required.length) {
+    suggestions.push("Consider improving your examples of relevant projects and experience.");
+  }
+
+  if (!suggestions.length && required.length) {
+    suggestions.push("Good keyword match. Check that your resume clearly demonstrates these skills with real examples.");
+  }
+
+  if (!required.length) {
+    suggestions.push("This tool recognizes only a limited set of keywords. Review the job description manually.");
+  }
+
+  suggestionBox.textContent = "Improvement Suggestions: " + suggestions.join(" ");
+  
+  document.getElementById("message").textContent =
+    required.length
+      ? "This score measures keyword overlap only. It does not guarantee job suitability."
+      : "We could not calculate a score because no supported skills were found.";
+}
+</script>
