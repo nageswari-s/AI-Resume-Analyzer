@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Resume Analyzer</title>
+  <meta name="description" content="Analyze your resume against a job description and get practical improvement suggestions.">
+  <title>AI Resume Analyzer | Nageswari S</title>
 
   <style>
     * {
@@ -14,16 +16,17 @@
     }
 
     body {
-      background: #f4f7fb;
+      background: #f3f6fc;
       color: #1f2937;
       min-height: 100vh;
+      line-height: 1.6;
     }
 
     header {
-      background: #111827;
+      background: linear-gradient(135deg, #111827, #1d4ed8);
       color: white;
-      padding: 25px 20px;
       text-align: center;
+      padding: 35px 18px;
     }
 
     header h1 {
@@ -32,48 +35,62 @@
     }
 
     header p {
-      color: #d1d5db;
+      color: #e5e7eb;
     }
 
     .container {
       max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
+      margin: 28px auto;
+      padding: 0 16px;
     }
 
     .card {
       background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 5px 22px rgba(0, 0, 0, 0.07);
+      margin-bottom: 22px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin: 18px 0 8px;
     }
 
     textarea {
+      display: block;
       width: 100%;
-      min-height: 180px;
-      padding: 15px;
-      border: 1px solid #d1d5db;
+      min-height: 160px;
+      padding: 14px;
+      border: 1px solid #cbd5e1;
       border-radius: 10px;
-      resize: vertical;
       font-size: 15px;
+      line-height: 1.5;
+      resize: vertical;
+      background: #fff;
+      color: #111827;
+    }
+
+    textarea:focus {
+      outline: 2px solid #93c5fd;
+      border-color: #2563eb;
     }
 
     button {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 18px;
       padding: 14px;
       border: none;
       border-radius: 10px;
       background: #2563eb;
       color: white;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -82,187 +99,286 @@
       background: #1d4ed8;
     }
 
+    button:focus-visible {
+      outline: 3px solid #93c5fd;
+      outline-offset: 3px;
+    }
+
+    .secondary {
+      background: #0f766e;
+    }
+
+    .secondary:hover {
+      background: #115e59;
+    }
+
     #result {
       display: none;
     }
 
     .score {
-      font-size: 40px;
+      font-size: 38px;
       font-weight: bold;
+      color: #2563eb;
       text-align: center;
-      margin: 15px 0;
+      margin: 14px 0;
     }
 
     .result-item {
-      padding: 12px;
-      margin-top: 10px;
-      background: #f3f4f6;
-      border-radius: 8px;
+      padding: 14px;
+      margin-top: 12px;
+      background: #f1f5f9;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .result-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 12px;
     }
 
     footer {
       text-align: center;
-      padding: 25px;
-      color: #6b7280;
+      padding: 25px 15px;
+      color: #64748b;
     }
 
     @media (max-width: 600px) {
       header h1 {
-        font-size: 24px;
+        font-size: 25px;
       }
 
-      .container {
-        margin: 15px auto;
-        padding: 12px;
+      .card {
+        padding: 17px;
+      }
+
+      .score {
+        font-size: 32px;
       }
     }
   </style>
 </head>
 
 <body>
-
   <header>
     <h1>AI Resume Analyzer</h1>
-    <p>Analyze your resume and improve your job opportunities</p>
+    <p>Analyze your resume and discover ways to improve it</p>
   </header>
 
-  <div class="container">
+  <main class="container">
+    <section class="card">
+      <h2>Analyze Your Resume</h2>
 
-    <div class="card">
       <label for="resume">Paste Your Resume</label>
+      <textarea id="resume"
+        placeholder="Paste your resume text here..."></textarea>
 
-      <textarea
-        id="resume"
-        placeholder="Paste your resume text here..."
-      ></textarea>
+      <label for="job">Paste Job Description</label>
+      <textarea id="job"
+        placeholder="Paste the job description here..."></textarea>
 
-      <label for="job" style="margin-top:20px;">
-        Paste Job Description
-      </label>
-
-      <textarea
-        id="job"
-        placeholder="Paste the job description here..."
-      ></textarea>
-
-      <button onclick="analyzeResume()">
+      <button type="button" id="analyzeButton">
         Analyze Resume
       </button>
-    </div>
 
-    <div class="card" id="result">
-      <h2>Analysis Result</h2>
+      <p class="note">
+        Your text is analyzed in this browser and is not sent to a server
+        by this page.
+      </p>
+    </section>
 
-      <div class="score" id="score">0%</div>
+    <section class="card" id="result" aria-live="polite">
+      <h2>Analysis Results</h2>
+
+      <div class="score" id="score"></div>
 
       <div class="result-item" id="skills"></div>
+      <div class="result-item" id="missing"></div>
       <div class="result-item" id="message"></div>
-    </div>
+      <div class="result-item" id="resumeTips"></div>
+      <div class="result-item" id="improvedResume"></div>
 
-  </div>
+      <button type="button" class="secondary" id="downloadButton">
+        Download Analysis Report
+      </button>
+    </section>
+  </main>
 
   <footer>
     <p>AI Resume Analyzer | Nageswari S</p>
+    <p>Built with HTML, CSS and JavaScript</p>
   </footer>
 
- 
-<script>
-function analyzeResume() {
-  const resume = document.getElementById("resume").value.toLowerCase();
-  const job = document.getElementById("job").value.toLowerCase();
+  <script>
+    const keywords = [
+      "python",
+      "java",
+      "javascript",
+      "html",
+      "css",
+      "sql",
+      "mysql",
+      "react",
+      "git",
+      "github",
+      "machine learning",
+      "data structures",
+      "communication",
+      "problem solving",
+      "teamwork",
+      "flask",
+      "django",
+      "c++",
+      "c programming",
+      "leadership"
+    ];
 
-  if (!resume.trim() || !job.trim()) {
-    alert("Please enter both your resume and the job description.");
-    return;
-  }
+    let latestReport = "";
 
-  const keywords = [
-    "python",
-    "java",
-    "javascript",
-    "html",
-    "css",
-    "sql",
-    "mysql",
-    "react",
-    "git",
-    "github",
-    "machine learning",
-    "data structures",
-    "communication",
-    "problem solving",
-    "teamwork"
-  ];
+    function analyzeResume() {
+      const resumeText = document.getElementById("resume").value.trim();
+      const jobText = document.getElementById("job").value.trim();
 
-  // Only consider skills mentioned in the job description.
-  const required = keywords.filter(skill => job.includes(skill));
+      if (!resumeText || !jobText) {
+        alert("Please enter both your resume and the job description.");
+        return;
+      }
 
-  const matched = required.filter(skill => resume.includes(skill));
-  const missing = required.filter(skill => !resume.includes(skill));
+      const resume = resumeText.toLowerCase();
+      const job = jobText.toLowerCase();
 
-  // Avoid dividing by zero if no recognized skills appear in the job description.
-  const score = required.length
-    ? Math.round((matched.length / required.length) * 100)
-    : 0;
+      const required = keywords.filter(skill => job.includes(skill));
+      const matched = required.filter(skill => resume.includes(skill));
+      const missing = required.filter(skill => !resume.includes(skill));
 
-  document.getElementById("result").style.display = "block";
+      const score = required.length
+        ? Math.round((matched.length / required.length) * 100)
+        : null;
 
-  document.getElementById("score").textContent =
-    required.length ? score + "% Match" : "No score available";
+      document.getElementById("result").style.display = "block";
 
-  document.getElementById("skills").textContent =
-    "Matched Skills: " +
-    (matched.length ? matched.join(", ") : "No matching skills found.");
+      document.getElementById("score").textContent =
+        score === null ? "N/A" : score + "% Match";
 
-  // Show missing skills.
-  let missingBox = document.getElementById("missing");
+      document.getElementById("skills").textContent =
+        "Matched Skills: " +
+        (matched.length ? matched.join(", ") : "No matching skills found.");
 
-  if (!missingBox) {
-    missingBox = document.createElement("div");
-    missingBox.id = "missing";
-    missingBox.className = "result-item";
-    document.getElementById("skills").after(missingBox);
-  }
+      document.getElementById("missing").textContent =
+        "Missing Skills: " +
+        (score === null
+          ? "No supported skills found in the job description."
+          : missing.length
+            ? missing.join(", ")
+            : "No missing skills from our keyword list.");
 
-  missingBox.textContent =
-    "Missing Skills: " +
-    (required.length
-      ? (missing.length ? missing.join(", ") : "No missing skills from our keyword list.")
-      : "No recognized skills found in the job description.");
+      document.getElementById("message").textContent =
+        score === null
+          ? "We could not calculate a score because no supported skills were found. Review the job requirements manually."
+          : "Keyword match: " + score +
+            "%. This measures overlap with our limited keyword list, not overall suitability for a job.";
 
-  // Provide suggestions.
-  let suggestionBox = document.getElementById("suggestions");
+      const tips = [];
+      const resumeLower = resume;
 
-  if (!suggestionBox) {
-    suggestionBox = document.createElement("div");
-    suggestionBox.id = "suggestions";
-    suggestionBox.className = "result-item";
-    missingBox.after(suggestionBox);
-  }
+      if (!/\b(objective|career objective|professional summary|profile summary)\b/i.test(resumeText)) {
+        tips.push("Consider adding a short professional summary or career objective tailored to the role.");
+      }
 
-  let suggestions = [];
+      if (!/\beducation\b/i.test(resumeText)) {
+        tips.push("Add an Education section with your degree, institution and graduation year.");
+      }
 
-  if (missing.length) {
-    suggestions.push("Review the job requirements and add relevant skills only if you genuinely have them: " + missing.join(", ") + ".");
-  }
+      if (!/\b(project|projects)\b/i.test(resumeText)) {
+        tips.push("Add relevant projects and explain your contribution, technologies and outcome.");
+      }
 
-  if (score < 70 && required.length) {
-    suggestions.push("Consider improving your examples of relevant projects and experience.");
-  }
+      if (!/\b(internship|intern|experience|employment)\b/i.test(resumeText)) {
+        tips.push("If you have relevant internship, volunteer or work experience, include it. Do not invent experience.");
+      }
 
-  if (!suggestions.length && required.length) {
-    suggestions.push("Good keyword match. Check that your resume clearly demonstrates these skills with real examples.");
-  }
+      if (missing.length) {
+        tips.push(
+          "Compare the missing job keywords with your real skills. Add only those you genuinely know: " +
+          missing.join(", ") + "."
+        );
+      }
 
-  if (!required.length) {
-    suggestions.push("This tool recognizes only a limited set of keywords. Review the job description manually.");
-  }
+      if (resumeText.length < 300) {
+        tips.push("Your resume text is quite short. Check whether relevant education, skills, projects and achievements are missing.");
+      }
 
-  suggestionBox.textContent = "Improvement Suggestions: " + suggestions.join(" ");
-  
-  document.getElementById("message").textContent =
-    required.length
-      ? "This score measures keyword overlap only. It does not guarantee job suitability."
-      : "We could not calculate a score because no supported skills were found.";
-}
-</script>
+      if (!tips.length) {
+        tips.push("Your resume contains several common sections. Check spelling, consistency and whether each project describes your own contribution.");
+      }
+
+      document.getElementById("resumeTips").textContent =
+        "Resume Improvement Tips:\n\n• " + tips.join("\n\n• ");
+
+      const example =
+        "Example of stronger project wording:\n\n" +
+        "Instead of: " +
+        "\"Created a website.\"\n\n" +
+        "Try: " +
+        "\"Built a responsive website using HTML, CSS and JavaScript to provide [describe the real functionality].\"\n\n" +
+        "Use this wording only if it accurately describes your work, and replace the bracketed part with a real detail.";
+
+      document.getElementById("improvedResume").textContent =
+        "Example Resume Improvement:\n\n" + example;
+
+      latestReport =
+        "AI RESUME ANALYZER REPORT\n\n" +
+        "Match Score: " + (score === null ? "Not available" : score + "%") + "\n\n" +
+        "Matched Skills: " + (matched.join(", ") || "None found") + "\n\n" +
+        "Missing Skills: " + (missing.join(", ") || "None found in the supported keyword list") + "\n\n" +
+        "Improvement Tips:\n- " + tips.join("\n- ") + "\n\n" +
+        example +
+        "\n\nNote: This is a basic keyword-based tool, not a full AI assessment.";
+
+      document.getElementById("result").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    function downloadReport() {
+      if (!latestReport) {
+        alert("Please analyze a resume before downloading a report.");
+        return;
+      }
+
+      const blob = new Blob([latestReport], {
+        type: "text/plain;charset=utf-8"
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "resume-analysis-report.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("analyzeButton").addEventListener(
+      "click",
+      analyzeResume
+    );
+
+    document.getElementById("downloadButton").addEventListener(
+      "click",
+      downloadReport
+    );
+  </script>
+</body>
+</html>
